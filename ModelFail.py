@@ -6,10 +6,10 @@ from gym.utils import seeding
 class ModelFail(gym.Env):
     """ModelFail Enviroment:
 
-    See [https://arxiv.org/pdf/1604.00923.pdf] for a description of the 
+    See [https://arxiv.org/pdf/1604.00923.pdf] for a description of the
     original environment. The following description is directly based off the
     descriptoin in the linked paper.
-    
+
     Although the MDP has three states, the agent does not observe which state
     it is in. It always starts in the leftmost state.
 
@@ -35,28 +35,32 @@ class ModelFail(gym.Env):
         self.action_space = spaces.Discrete(2)
         self.observation_space = spaces.Discrete(1)
         self.seed()
-    
+
     def seed(self, seed=None):
         self.np_random, seed = seeding.np_random(seed)
         return [seed]
 
     def step(self, action):
         assert self.action_space.contains(action)
-        if self.state != 0:
-            # Moves agent to the terminal state, denoted by 3.
+        if self.state == 1:
+            # Moves agent to the terminal state, denoted by 3
             self.state = 3
-            reward = 0
-        elif action == 0:
-            # Agent is at left state and moves up
-            self.state = 1
             reward = self.r
-        else:
-            # Agent is at left state and moves down
-            self.state = 2
+        elif self.state == 2:
+            # Moves agent to the terminal state, denoted by 3
+            self.state = 3
             reward = -self.r
+        elif action == 0:
+            # Agent is at left state and moves up, no reward recieved
+            self.state = 1
+            reward = 0
+        else:
+            # Agent is at left state and moves down, no reward recieved
+            self.state = 2
+            reward = 0
         done = (self.state == 3)
-        return self.state, reward, done, {}
+        return 0, reward, done, {} #observed is always 0
 
     def reset(self):
         self.state = 0
-        return self.state
+        return 0 #observed is always 0
